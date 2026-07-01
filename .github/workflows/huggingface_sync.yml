@@ -20,6 +20,6 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          # Replace 'YOUR_HF_USERNAME/YOUR_SPACE_NAME' with your actual space name
-          git remote add huggingface https://USER:$HF_TOKEN@huggingface.co/spaces/YOUR_HF_USERNAME/YOUR_SPACE_NAME
+          # Pushing to officek121/ATS
+          git remote add huggingface https://officek121:$HF_TOKEN@huggingface.co/spaces/officek121/ATS
           git push --force huggingface main:main
