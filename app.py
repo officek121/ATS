@@ -102,16 +102,28 @@ def mean_pooling(model_output, attention_mask):
     sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
     return (sum_embeddings / sum_mask).detach().numpy()
 
+from sentence_transformers import SentenceTransformer
+
+# Initialize standard SentenceTransformer as fallback
+st_model = None
+
 def get_embeddings(texts: List[str]) -> np.ndarray:
-    """Generate semantic embeddings using the quantized OpenVINO model."""
-    if not ov_model:
-        raise RuntimeError("OpenVINO model not found. Run setup.py to export it.")
+    """Generate semantic embeddings using OpenVINO if available, otherwise standard SentenceTransformers."""
+    global st_model
+    
+    # Fast path: OpenVINO (if available)
+    if ov_model:
+        inputs = tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
+        with torch.no_grad():
+            outputs = ov_model(**inputs)
+        return mean_pooling(outputs, inputs['attention_mask'])
         
-    inputs = tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
-    with torch.no_grad():
-        outputs = ov_model(**inputs)
+    # Fallback: Standard PyTorch SentenceTransformer (Perfect for cloud deployment)
+    if not st_model:
+        print("[INFO] OpenVINO model not found. Using standard SentenceTransformer fallback.")
+        st_model = SentenceTransformer(MODEL_ID)
         
-    return mean_pooling(outputs, inputs['attention_mask'])
+    return st_model.encode(texts, normalize_embeddings=True)
 
 def build_hybrid_index(documents: List[Dict[str, str]]) -> Dict[str, Any]:
     """
