@@ -1,0 +1,11 @@
+streamlit
+pymupdf4llm
+python-docx
+sentence-transformers
+faiss-cpu
+rank_bm25
+groq
+pydantic
+python-dotenv
+numpy
+pandas

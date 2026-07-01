@@ -1,0 +1,11 @@
+gradio
+pypdf
+rank_bm25
+sentence-transformers
+optimum[openvino,intel]
+httpx
+scikit-learn
+torch
+numpy
+PyMuPDF
+python-dotenv

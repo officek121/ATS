@@ -1,0 +1,25 @@
+name: Sync to Hugging Face Space
+
+on:
+  push:
+    branches: [main, master]
+  # to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          # Replace 'YOUR_HF_USERNAME/YOUR_SPACE_NAME' with your actual space name
+          git remote add huggingface https://USER:$HF_TOKEN@huggingface.co/spaces/YOUR_HF_USERNAME/YOUR_SPACE_NAME
+          git push --force huggingface main:main
